@@ -8,10 +8,14 @@ const topics = createSlice({
       const {id} = action.payload;
       state[id] = {...action.payload, quizIds: []};
     },
+    addQuizId: (state, action) => {
+      const {topicId, id} = action.payload;
+      state[topicId].quizIds.push(id);
+    },
   },
 });
 
 export const selectTopics = state => state.topics;
 
-export const {addTopic} = topics.actions;
+export const {addTopic, addQuizId} = topics.actions;
 export default topics.reducer;

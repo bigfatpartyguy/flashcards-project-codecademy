@@ -1,16 +1,20 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
-import ROUTES from "../app/routes";
+import React, {useState} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import {useHistory} from 'react-router-dom';
+import {selectTopics} from '../features/topics/topicsSlice';
+import {addQuizThunk} from '../features/quizzes/quizzesSlice';
+import {v4 as uuidv4} from 'uuid';
+import ROUTES from '../app/routes';
 
 export default function NewQuizForm() {
-  const [name, setName] = useState("");
+  const dispatch = useDispatch();
+  const [name, setName] = useState('');
   const [cards, setCards] = useState([]);
-  const [topicId, setTopicId] = useState("");
+  const [topicId, setTopicId] = useState('');
   const history = useHistory();
-  const topics = {};
+  const topics = useSelector(selectTopics);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     if (name.length === 0) {
       return;
@@ -20,13 +24,20 @@ export default function NewQuizForm() {
 
     // create the new cards here and add each card's id to cardIds
     // create the new quiz here
+    const quiz = {
+      id: uuidv4(),
+      topicId,
+      name,
+      cardIds,
+    };
 
+    dispatch(addQuizThunk(quiz));
     history.push(ROUTES.quizzesRoute());
   };
 
-  const addCardInputs = (e) => {
+  const addCardInputs = e => {
     e.preventDefault();
-    setCards(cards.concat({ front: "", back: "" }));
+    setCards(cards.concat({front: '', back: ''}));
   };
 
   const removeCard = (e, index) => {
@@ -47,16 +58,16 @@ export default function NewQuizForm() {
         <input
           id="quiz-name"
           value={name}
-          onChange={(e) => setName(e.currentTarget.value)}
+          onChange={e => setName(e.currentTarget.value)}
           placeholder="Quiz Title"
         />
         <select
           id="quiz-topic"
-          onChange={(e) => setTopicId(e.currentTarget.value)}
+          onChange={e => setTopicId(e.currentTarget.value)}
           placeholder="Topic"
         >
           <option value="">Topic</option>
-          {Object.values(topics).map((topic) => (
+          {Object.values(topics).map(topic => (
             <option key={topic.id} value={topic.id}>
               {topic.name}
             </option>
@@ -67,8 +78,8 @@ export default function NewQuizForm() {
             <input
               id={`card-front-${index}`}
               value={cards[index].front}
-              onChange={(e) =>
-                updateCardState(index, "front", e.currentTarget.value)
+              onChange={e =>
+                updateCardState(index, 'front', e.currentTarget.value)
               }
               placeholder="Front"
             />
@@ -76,14 +87,14 @@ export default function NewQuizForm() {
             <input
               id={`card-back-${index}`}
               value={cards[index].back}
-              onChange={(e) =>
-                updateCardState(index, "back", e.currentTarget.value)
+              onChange={e =>
+                updateCardState(index, 'back', e.currentTarget.value)
               }
               placeholder="Back"
             />
 
             <button
-              onClick={(e) => removeCard(e, index)}
+              onClick={e => removeCard(e, index)}
               className="remove-card-button"
             >
               Remove Card
